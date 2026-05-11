@@ -1,4 +1,4 @@
-# Applitools Eyes Baseline Merge — Jenkins Shared Library
+# Applitools Eyes Baseline Merge: Jenkins Shared Library
 
 A Jenkins shared library step that merges Applitools Eyes baselines between branches using the [Applitools Server API](https://applitools.com/docs/eyes/reference/server-api/scm-integrations/merge-branches).
 
@@ -6,7 +6,7 @@ A Jenkins shared library step that merges Applitools Eyes baselines between bran
 
 ### 1. Add to Jenkins
 
-In **Manage Jenkins → System → Global Pipeline Libraries**, add:
+In **Manage Jenkins -> System -> Global Pipeline Libraries**, add:
 
 | Field | Value |
 |-------|-------|
@@ -16,9 +16,9 @@ In **Manage Jenkins → System → Global Pipeline Libraries**, add:
 
 ### 2. Store the API key
 
-In **Manage Jenkins → Credentials**, create a **Secret text** credential with:
+In **Manage Jenkins -> Credentials**, create a **Secret text** credential with:
 - ID: `applitools-api-key`
-- Value: your Applitools merge API key (found in the Eyes dashboard under Team → API Key)
+- Value: your Applitools merge API key (found in the Eyes dashboard under Team -> API Key)
 
 ---
 
@@ -37,7 +37,7 @@ stage('Merge Applitools Baselines') {
                 onlyCheck:        false,          // set true to check for conflicts without merging
                 timeoutSecs:      300,            // how long to wait for the job (default: 300)
                 pollIntervalSecs: 10,             // how often to poll for status (default: 10)
-                eyesServerUrl:    'https://eyes.applitools.com'  // only needed for self-hosted
+                eyesServerUrl:    'https://eyes.applitools.com'  // only needed for private cloud
             )
 
             echo "merged=${result.merged}, conflicts=${result.conflicts}"
@@ -105,5 +105,5 @@ def target = "${org}/${repo}/main"
 
 - Jenkins 2.x with Pipeline support
 - No additional plugins required (uses Groovy's built-in `HttpURLConnection`)
-- Script security: `groovy.json.JsonSlurperClassic` must be whitelisted if running in a sandboxed environment. Add it via **Manage Jenkins → In-process Script Approval** if needed.
+- Script security: `groovy.json.JsonSlurperClassic` must be whitelisted if running in a sandboxed environment. Add it via **Manage Jenkins -> In-process Script Approval** if needed.
 # applitools-eyes-jenkins-merge-sl

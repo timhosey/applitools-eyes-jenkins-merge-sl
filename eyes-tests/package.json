@@ -1,0 +1,18 @@
+{
+  "name": "eyes-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:main":    "playwright test specs/main-branch.spec.ts",
+    "test:feature": "playwright test specs/feature-branch.spec.ts",
+    "test:all":     "playwright test"
+  },
+  "dependencies": {
+    "@applitools/eyes-playwright": "^1.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

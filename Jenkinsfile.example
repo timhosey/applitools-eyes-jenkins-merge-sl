@@ -1,0 +1,53 @@
+// Minimal example: merge Applitools baselines after a successful build.
+// For a full pipeline with conflict pre-check and build parameters, see Jenkinsfile.
+// Requires this library to be configured in Jenkins > Manage Jenkins > Global Pipeline Libraries.
+
+@Library('applitools-shared-library') _
+
+pipeline {
+    agent any
+
+    environment {
+        APPLITOOLS_API_KEY = credentials('applitools-api-key')
+    }
+
+    stages {
+        stage('Build & Test') {
+            steps {
+                echo 'Running build and visual tests...'
+                // ... your existing build/test steps ...
+            }
+        }
+
+        stage('Merge Applitools Baselines') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    def repo = sh(
+                        returnStdout: true,
+                        script: "git remote get-url origin | sed 's|.*/||;s|\\.git\$||'"
+                    ).trim()
+
+                    def result = applitoolsMergeBranches(
+                        apiKey:           env.APPLITOOLS_API_KEY,
+                        sourceBranch:     "myorg/${repo}/${env.CHANGE_BRANCH ?: env.BRANCH_NAME}",
+                        targetBranch:     "myorg/${repo}/main",
+                        onlyCheck:        false,
+                        timeoutSecs:      300,
+                        pollIntervalSecs: 10
+                    )
+
+                    echo "merged=${result.merged}, conflicts=${result.conflicts}, changes=${result.changesCount}"
+
+                    if (result.conflicts > 0) {
+                        unstable("Applitools: ${result.conflicts} conflict(s) after merge. Review in the Eyes dashboard.")
+                    } else if (!result.merged) {
+                        unstable('Applitools: merge completed but merged=false. Check the Eyes dashboard.')
+                    }
+                }
+            }
+        }
+    }
+}

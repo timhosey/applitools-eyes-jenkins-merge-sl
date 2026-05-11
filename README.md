@@ -2,6 +2,14 @@
 
 A Jenkins shared library step that merges Applitools Eyes baselines between branches using the [Applitools Server API](https://applitools.com/docs/eyes/reference/server-api/scm-integrations/merge-branches).
 
+## Requirements
+
+- Jenkins 2.x with Pipeline support
+- `curl` and `jq` available on the agent's `PATH`
+- No additional Jenkins plugins required
+
+---
+
 ## Setup
 
 ### 1. Add to Jenkins
@@ -18,7 +26,7 @@ In **Manage Jenkins -> System -> Global Pipeline Libraries**, add:
 
 In **Manage Jenkins -> Credentials**, create a **Secret text** credential with:
 - ID: `applitools-api-key`
-- Value: your Applitools merge API key (found in the Eyes dashboard under Team -> API Key)
+- Value: your Applitools merge API key (found or generated in the Eyes admin view under API Keys)
 
 ---
 
@@ -37,7 +45,7 @@ stage('Merge Applitools Baselines') {
                 onlyCheck:        false,          // set true to check for conflicts without merging
                 timeoutSecs:      300,            // how long to wait for the job (default: 300)
                 pollIntervalSecs: 10,             // how often to poll for status (default: 10)
-                eyesServerUrl:    'https://eyes.applitools.com'  // only needed for private cloud
+                eyesServerUrl:    'https://eyes.applitools.com'  // only needed for self-hosted
             )
 
             echo "merged=${result.merged}, conflicts=${result.conflicts}"
@@ -66,12 +74,12 @@ The step returns a `Map` with:
 |-----|------|-------------|
 | `merged` | Boolean | Whether the merge was performed successfully. |
 | `conflicts` | Integer | Number of conflicting baselines detected. |
-| `changes` | List | Array of changed baseline entries from the API response. |
+| `changesCount` | Integer | Number of baselines changed by the merge. |
 | `jobId` | String | The async job ID, useful for debugging. |
 
 ### Error handling
 
-The step throws a `RuntimeException` (failing the build) if:
+The step fails the build (via `error`) if:
 - Required parameters are missing
 - The API returns a non-202 status on the initial merge request
 - The branch is not found (HTTP 404)
@@ -83,7 +91,7 @@ Use `catchError` or `try/catch` in your pipeline if you want non-fatal behavior.
 
 ## Branch name format
 
-The Applitools API expects branch names in the format `company_name/repository/branch`, for example:
+The Applitools API expects branch names in the format `company/repository/branch`, for example:
 
 ```
 acme-corp/my-app/feature-login
@@ -93,7 +101,7 @@ acme-corp/my-app/main
 You can construct these dynamically in a pipeline:
 
 ```groovy
-def repo   = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().replace('.git', '')
+def repo   = sh(returnStdout: true, script: "git remote get-url origin | sed 's|.*/||;s|\\.git\$||'").trim()
 def org    = 'acme-corp'
 def source = "${org}/${repo}/${env.BRANCH_NAME}"
 def target = "${org}/${repo}/main"
@@ -101,8 +109,8 @@ def target = "${org}/${repo}/main"
 
 ---
 
-## Requirements
+## Implementation notes
 
-- Jenkins 2.x with Pipeline support
-- No additional plugins required (uses Groovy's built-in `HttpURLConnection`)
-- Script security: `groovy.json.JsonSlurperClassic` must be whitelisted if running in a sandboxed environment. Add it via **Manage Jenkins -> In-process Script Approval** if needed.
+All HTTP calls are made with `curl` and JSON responses are parsed with `jq` inside `sh` steps, so there is no Groovy JSON parsing as JsonSlurper is a performance risk per the Jenkins docs. The API key and branch names are passed to shell via `withEnv` rather than Groovy string interpolation, which prevents shell injection from branch names containing special characters and keeps the API key out of shell process listings.
+
+The merge is asynchronous: the step POSTs the request, extracts the job ID from the `Location` response header, polls the status endpoint until the job completes (HTTP 201), then retrieves the result.

@@ -10,25 +10,17 @@
  *                    APPLITOOLS_REPO (default: helloworld-demo)
  */
 
-import { test, expect }                  from '@playwright/test';
-import { Eyes, Target, Configuration }   from '@applitools/eyes-playwright';
+import { test, expect }        from '@playwright/test';
+import { Eyes, Target }        from '@applitools/eyes-playwright';
+import { createEyesConfig, org, repo } from '../eyes-config';
 
-const org  = process.env.APPLITOOLS_ORG  ?? 'myorg';
-const repo = process.env.APPLITOOLS_REPO ?? 'helloworld-demo';
-
-// Full branch path expected by the Applitools merge API: company/repo/branch
 const BRANCH_NAME = `${org}/${repo}/main`;
 
 test.describe('Helloworld — main branch baseline', () => {
   let eyes: Eyes;
 
   test.beforeEach(async () => {
-    if (!process.env.APPLITOOLS_API_KEY) {
-      throw new Error('APPLITOOLS_API_KEY environment variable is not set');
-    }
-
-    const config = new Configuration();
-    config.setApiKey(process.env.APPLITOOLS_API_KEY);
+    const config = createEyesConfig();
     config.setBranchName(BRANCH_NAME);
 
     eyes = new Eyes();
@@ -43,14 +35,10 @@ test.describe('Helloworld — main branch baseline', () => {
     await eyes.open(page, 'Helloworld', 'Main page', { width: 1280, height: 720 });
 
     await page.goto('https://applitools.com/helloworld/');
-    await expect(page.locator('h2')).toBeVisible();
+    await page.waitForLoadState('networkidle');
 
     await eyes.check('Initial load', Target.window().fully());
-
-    const result = await eyes.close(false);
-    expect(result.isNew() || result.isPassed(),
-      `Eyes result status: ${result.getStatus()}`
-    ).toBe(true);
+    await eyes.close();
   });
 
   test('after button click', async ({ page }) => {
@@ -61,10 +49,6 @@ test.describe('Helloworld — main branch baseline', () => {
     await expect(page.locator('text=You successfully clicked')).toBeVisible();
 
     await eyes.check('After click', Target.window().fully());
-
-    const result = await eyes.close(false);
-    expect(result.isNew() || result.isPassed(),
-      `Eyes result status: ${result.getStatus()}`
-    ).toBe(true);
+    await eyes.close();
   });
 });

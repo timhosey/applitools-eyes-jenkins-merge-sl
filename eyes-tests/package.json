@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test":         "playwright test specs/main-branch.spec.ts specs/feature-branch.spec.ts",
     "test:main":    "playwright test specs/main-branch.spec.ts",
-    "test:feature": "playwright test specs/feature-branch.spec.ts",
-    "test:all":     "playwright test"
+    "test:feature": "playwright test specs/feature-branch.spec.ts"
   },
   "dependencies": {
     "@applitools/eyes-playwright": "^1.0.0"

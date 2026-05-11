@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './specs',
-  fullyParallel: false,  // run sequentially to avoid Eyes API rate limits
+  fullyParallel: false,
+  workers: 1,  // single process so all specs share the same BatchInfo module singleton
   retries: 0,
   reporter: 'list',
   use: {

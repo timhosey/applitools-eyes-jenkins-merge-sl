@@ -45,7 +45,7 @@ stage('Merge Applitools Baselines') {
                 onlyCheck:        false,          // set true to check for conflicts without merging
                 timeoutSecs:      300,            // how long to wait for the job (default: 300)
                 pollIntervalSecs: 10,             // how often to poll for status (default: 10)
-                eyesServerUrl:    'https://eyes.applitools.com'  // only needed for self-hosted
+                eyesServerUrl:    'https://eyes.applitools.com'  // only needed for private cloud
             )
 
             echo "merged=${result.merged}, conflicts=${result.conflicts}"

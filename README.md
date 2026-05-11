@@ -106,4 +106,3 @@ def target = "${org}/${repo}/main"
 - Jenkins 2.x with Pipeline support
 - No additional plugins required (uses Groovy's built-in `HttpURLConnection`)
 - Script security: `groovy.json.JsonSlurperClassic` must be whitelisted if running in a sandboxed environment. Add it via **Manage Jenkins -> In-process Script Approval** if needed.
-# applitools-eyes-jenkins-merge-sl

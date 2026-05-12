@@ -91,7 +91,7 @@ Use `catchError` or `try/catch` in your pipeline if you want non-fatal behavior.
 
 ## Branch name format
 
-The Applitools API expects branch names in the format `company/repository/branch`, for example:
+The Applitools API can accept branch names in your desired formation, the format for this example is `company/repository/branch`:
 
 ```
 acme-corp/my-app/feature-login

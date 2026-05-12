@@ -64,7 +64,7 @@ stage('Merge Applitools Baselines') {
 | `onlyCheck` | No | `false` | If `true`, validates for conflicts without performing the merge. |
 | `timeoutSecs` | No | `300` | Maximum seconds to wait for the async merge job to complete. |
 | `pollIntervalSecs` | No | `10` | Seconds between status poll requests. |
-| `eyesServerUrl` | No | `https://eyes.applitools.com` | Override for self-hosted Applitools installations. |
+| `eyesServerUrl` | No | `https://eyes.applitools.com` | Override for private cloude Applitools setups. |
 
 ### Return value
 

@@ -60,11 +60,11 @@ stage('Merge Applitools Baselines') {
 |-----------|----------|---------|-------------|
 | `apiKey` | Yes | — | Applitools API key. Use `credentials()` binding — never hardcode. |
 | `sourceBranch` | Yes | — | Branch to merge **from**. Format: `company/repo/branch`. |
-| `targetBranch` | Yes | — | Branch to merge **into**. Format: `company/repo/branch`. |
+| `targetBranch` | Yes | — | Branch to merge **into**. Format: `company/repo/branch`. See Branch Name Format section in the readme for more info. |
 | `onlyCheck` | No | `false` | If `true`, validates for conflicts without performing the merge. |
 | `timeoutSecs` | No | `300` | Maximum seconds to wait for the async merge job to complete. |
 | `pollIntervalSecs` | No | `10` | Seconds between status poll requests. |
-| `eyesServerUrl` | No | `https://eyes.applitools.com` | Override for private cloude Applitools setups. |
+| `eyesServerUrl` | No | `https://eyes.applitools.com` | Override for private cloud Applitools setups. |
 
 ### Return value
 
